@@ -418,6 +418,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    touchScrollEnabled: PropTypes.bool,
 
 	    /**
+	     * Boolean flag indicating scrolling should be disabled
+	     * This feature is current in beta and may have bugs
+	     */
+	    scrollLock: PropTypes.bool,
+
+	    /**
 	     * Hide the scrollbar but still enable scroll functionality
 	     */
 	    showScrollbarX: PropTypes.bool,
@@ -1227,7 +1233,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	  },
 	  _onScroll: function _onScroll( /*number*/deltaX, /*number*/deltaY) {
-	    if (this.isMounted()) {
+	    if (this.isMounted() && !this.props.scrollLock) {
 	      if (!this._isScrolling) {
 	        this._didScrollStart();
 	      }
