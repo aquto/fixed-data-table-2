@@ -4,6 +4,14 @@ var _React = require('./React');
 
 var _React2 = _interopRequireDefault(_React);
 
+var _createReactClass = require('create-react-class');
+
+var _createReactClass2 = _interopRequireDefault(_createReactClass);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _FixedDataTableRowBuffer = require('./FixedDataTableRowBuffer');
 
 var _FixedDataTableRowBuffer2 = _interopRequireDefault(_FixedDataTableRowBuffer);
@@ -38,38 +46,39 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @typechecks
  */
 
-var PropTypes = _React2.default.PropTypes;
-
-
-var FixedDataTableBufferedRows = _React2.default.createClass({
+var FixedDataTableBufferedRows = (0, _createReactClass2.default)({
   displayName: 'FixedDataTableBufferedRows',
 
-
   propTypes: {
-    isScrolling: PropTypes.bool,
-    defaultRowHeight: PropTypes.number.isRequired,
-    firstRowIndex: PropTypes.number.isRequired,
-    firstRowOffset: PropTypes.number.isRequired,
-    fixedColumns: PropTypes.array.isRequired,
-    height: PropTypes.number.isRequired,
-    offsetTop: PropTypes.number.isRequired,
-    onRowClick: PropTypes.func,
-    onRowDoubleClick: PropTypes.func,
-    onRowMouseDown: PropTypes.func,
-    onRowMouseEnter: PropTypes.func,
-    onRowMouseLeave: PropTypes.func,
-    rowClassNameGetter: PropTypes.func,
-    rowsCount: PropTypes.number.isRequired,
-    rowHeightGetter: PropTypes.func,
-    rowPositionGetter: PropTypes.func.isRequired,
-    scrollLeft: PropTypes.number.isRequired,
-    scrollableColumns: PropTypes.array.isRequired,
-    showLastRowBorder: PropTypes.bool,
-    width: PropTypes.number.isRequired
+    bufferRowCount: _propTypes2.default.number,
+    isScrolling: _propTypes2.default.bool,
+    defaultRowHeight: _propTypes2.default.number.isRequired,
+    firstRowIndex: _propTypes2.default.number.isRequired,
+    firstRowOffset: _propTypes2.default.number.isRequired,
+    fixedColumns: _propTypes2.default.array.isRequired,
+    height: _propTypes2.default.number.isRequired,
+    offsetTop: _propTypes2.default.number.isRequired,
+    onRowClick: _propTypes2.default.func,
+    onRowDoubleClick: _propTypes2.default.func,
+    onRowMouseDown: _propTypes2.default.func,
+    onRowMouseEnter: _propTypes2.default.func,
+    onRowMouseLeave: _propTypes2.default.func,
+    rowClassNameGetter: _propTypes2.default.func,
+    rowsCount: _propTypes2.default.number.isRequired,
+    rowHeightGetter: _propTypes2.default.func,
+    subRowHeight: _propTypes2.default.number,
+    subRowHeightGetter: _propTypes2.default.func,
+    rowExpanded: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func]),
+    rowKeyGetter: _propTypes2.default.func,
+    rowPositionGetter: _propTypes2.default.func.isRequired,
+    scrollLeft: _propTypes2.default.number.isRequired,
+    scrollableColumns: _propTypes2.default.array.isRequired,
+    showLastRowBorder: _propTypes2.default.bool,
+    width: _propTypes2.default.number.isRequired
   },
 
   getInitialState: function getInitialState() /*object*/{
-    this._rowBuffer = new _FixedDataTableRowBuffer2.default(this.props.rowsCount, this.props.defaultRowHeight, this.props.height, this._getRowHeight);
+    this._rowBuffer = new _FixedDataTableRowBuffer2.default(this.props.rowsCount, this.props.defaultRowHeight, this.props.height, this._getRowHeight, this.props.bufferRowCount);
     return {
       rowsToRender: this._rowBuffer.getRows(this.props.firstRowIndex, this.props.firstRowOffset)
     };
@@ -84,7 +93,7 @@ var FixedDataTableBufferedRows = _React2.default.createClass({
   },
   componentWillReceiveProps: function componentWillReceiveProps( /*object*/nextProps) {
     if (nextProps.rowsCount !== this.props.rowsCount || nextProps.defaultRowHeight !== this.props.defaultRowHeight || nextProps.height !== this.props.height) {
-      this._rowBuffer = new _FixedDataTableRowBuffer2.default(nextProps.rowsCount, nextProps.defaultRowHeight, nextProps.height, this._getRowHeight);
+      this._rowBuffer = new _FixedDataTableRowBuffer2.default(nextProps.rowsCount, nextProps.defaultRowHeight, nextProps.height, this._getRowHeight, this.props.bufferRowCount);
     }
     if (this.props.isScrolling && !nextProps.isScrolling) {
       this._updateBuffer();
@@ -95,7 +104,7 @@ var FixedDataTableBufferedRows = _React2.default.createClass({
     }
   },
   _updateBuffer: function _updateBuffer() {
-    if (this.isMounted()) {
+    if (this._rowBuffer) {
       this.setState({
         rowsToRender: this._rowBuffer.getRowsWithUpdatedBuffer()
       });
@@ -106,6 +115,7 @@ var FixedDataTableBufferedRows = _React2.default.createClass({
     return true;
   },
   componentWillUnmount: function componentWillUnmount() {
+    this._rowBuffer = null;
     this._staticRowArray.length = 0;
   },
   render: function render() /*object*/{
@@ -133,16 +143,20 @@ var FixedDataTableBufferedRows = _React2.default.createClass({
     for (var i = 0; i < rowsToRender.length; ++i) {
       var rowIndex = rowsToRender[i];
       var currentRowHeight = this._getRowHeight(rowIndex);
+      var currentSubRowHeight = this._getSubRowHeight(rowIndex);
       var rowOffsetTop = baseOffsetTop + rowPositions[rowIndex];
+      var rowKey = props.rowKeyGetter ? props.rowKeyGetter(rowIndex) : i;
 
       var hasBottomBorder = rowIndex === props.rowsCount - 1 && props.showLastRowBorder;
 
       this._staticRowArray[i] = _React2.default.createElement(_FixedDataTableRow2.default, {
-        key: i,
+        key: rowKey,
         isScrolling: props.isScrolling,
         index: rowIndex,
         width: props.width,
         height: currentRowHeight,
+        subRowHeight: currentSubRowHeight,
+        rowExpanded: props.rowExpanded,
         scrollLeft: Math.round(props.scrollLeft),
         offsetTop: Math.round(rowOffsetTop),
         fixedColumns: props.fixedColumns,
@@ -167,6 +181,9 @@ var FixedDataTableBufferedRows = _React2.default.createClass({
   },
   _getRowHeight: function _getRowHeight( /*number*/index) /*number*/{
     return this.props.rowHeightGetter ? this.props.rowHeightGetter(index) : this.props.defaultRowHeight;
+  },
+  _getSubRowHeight: function _getSubRowHeight( /*number*/index) /*number*/{
+    return this.props.subRowHeightGetter ? this.props.subRowHeightGetter(index) : this.props.subRowHeight;
   }
 });
 

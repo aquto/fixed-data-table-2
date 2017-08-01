@@ -19,6 +19,14 @@ var _React = require('./React');
 
 var _React2 = _interopRequireDefault(_React);
 
+var _createReactClass = require('create-react-class');
+
+var _createReactClass2 = _interopRequireDefault(_createReactClass);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _ReactComponentWithPureRenderMixin = require('./ReactComponentWithPureRenderMixin');
 
 var _ReactComponentWithPureRenderMixin2 = _interopRequireDefault(_ReactComponentWithPureRenderMixin);
@@ -85,8 +93,6 @@ var _FixedDataTableTranslateDOMPosition2 = _interopRequireDefault(_FixedDataTabl
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var PropTypes = _React2.default.PropTypes;
-
 var ReactChildren = _React2.default.Children;
 
 var EMPTY_OBJECT = {};
@@ -143,9 +149,8 @@ var DRAG_SCROLL_BUFFER = 100;
  * - Scrollable Body Columns: The body columns that move while scrolling
  *   vertically or horizontally.
  */
-var FixedDataTable = _React2.default.createClass({
+var FixedDataTable = (0, _createReactClass2.default)({
   displayName: 'FixedDataTable',
-
 
   propTypes: {
 
@@ -153,7 +158,7 @@ var FixedDataTable = _React2.default.createClass({
      * Pixel width of table. If all columns do not fit,
      * a horizontal scrollbar will appear.
      */
-    width: PropTypes.number.isRequired,
+    width: _propTypes2.default.number.isRequired,
 
     /**
      * Pixel height of table. If all rows do not fit,
@@ -161,12 +166,12 @@ var FixedDataTable = _React2.default.createClass({
      *
      * Either `height` or `maxHeight` must be specified.
      */
-    height: PropTypes.number,
+    height: _propTypes2.default.number,
 
     /**
      * Class name to be passed into parent container
      */
-    className: PropTypes.string,
+    className: _propTypes2.default.string,
 
     /**
      * Maximum pixel height of table. If all rows do not fit,
@@ -174,7 +179,7 @@ var FixedDataTable = _React2.default.createClass({
      *
      * Either `height` or `maxHeight` must be specified.
      */
-    maxHeight: PropTypes.number,
+    maxHeight: _propTypes2.default.number,
 
     /**
      * Pixel height of table's owner, this is used in a managed scrolling
@@ -189,137 +194,189 @@ var FixedDataTable = _React2.default.createClass({
      *
      * This is used if `ownerHeight < height` (or `maxHeight`).
      */
-    ownerHeight: PropTypes.number,
+    ownerHeight: _propTypes2.default.number,
 
-    overflowX: PropTypes.oneOf(['hidden', 'auto']),
-    overflowY: PropTypes.oneOf(['hidden', 'auto']),
+    overflowX: _propTypes2.default.oneOf(['hidden', 'auto']),
+    overflowY: _propTypes2.default.oneOf(['hidden', 'auto']),
 
     /**
      * Boolean flag indicating of touch scrolling should be enabled
      * This feature is current in beta and may have bugs
      */
-    touchScrollEnabled: PropTypes.bool,
+    touchScrollEnabled: _propTypes2.default.bool,
 
     /**
      * Boolean flag indicating scrolling should be disabled
      * This feature is current in beta and may have bugs
      */
-    scrollLock: PropTypes.bool,
+    scrollLock: _propTypes2.default.bool,
 
     /**
      * Hide the scrollbar but still enable scroll functionality
      */
-    showScrollbarX: PropTypes.bool,
-    showScrollbarY: PropTypes.bool,
+    showScrollbarX: _propTypes2.default.bool,
+    showScrollbarY: _propTypes2.default.bool,
 
     /**
-     * Callback when horizontally scrolling the grid
+     * Callback when horizontally scrolling the grid.
      *
-     * Return false to stop propagation
+     * Return false to stop propagation.
      */
-    onHorizontalScroll: PropTypes.func,
+    onHorizontalScroll: _propTypes2.default.func,
+
+    /**
+     * Callback when vertically scrolling the grid.
+     *
+     * Return false to stop propagation.
+     */
+    onVerticalScroll: _propTypes2.default.func,
 
     /**
      * Number of rows in the table.
      */
-    rowsCount: PropTypes.number.isRequired,
+    rowsCount: _propTypes2.default.number.isRequired,
 
     /**
      * Pixel height of rows unless `rowHeightGetter` is specified and returns
      * different value.
      */
-    rowHeight: PropTypes.number.isRequired,
+    rowHeight: _propTypes2.default.number.isRequired,
 
     /**
      * If specified, `rowHeightGetter(index)` is called for each row and the
      * returned value overrides `rowHeight` for particular row.
      */
-    rowHeightGetter: PropTypes.func,
+    rowHeightGetter: _propTypes2.default.func,
+
+    /**
+     * Pixel height of sub-row unless `subRowHeightGetter` is specified and returns
+     * different value.  Defaults to 0 and no sub-row being displayed.
+     */
+    subRowHeight: _propTypes2.default.number,
+
+    /**
+     * If specified, `subRowHeightGetter(index)` is called for each row and the
+     * returned value overrides `subRowHeight` for particular row.
+     */
+    subRowHeightGetter: _propTypes2.default.func,
+
+    /**
+     * The row expanded for table row.
+     * This can either be a React element, or a function that generates
+     * a React Element. By default, the React element passed in can expect to
+     * receive the following props:
+     *
+     * ```
+     * props: {
+     *   rowIndex; number // (the row index)
+     *   height: number // (supplied from the Table or rowHeightGetter)
+     *   width: number // (supplied from the Table)
+     * }
+     * ```
+     *
+     * Because you are passing in your own React element, you can feel free to
+     * pass in whatever props you may want or need.
+     *
+     * If you pass in a function, you will receive the same props object as the
+     * first argument.
+     */
+    rowExpanded: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func]),
 
     /**
      * To get any additional CSS classes that should be added to a row,
      * `rowClassNameGetter(index)` is called.
      */
-    rowClassNameGetter: PropTypes.func,
+    rowClassNameGetter: _propTypes2.default.func,
+
+    /**
+     * If specified, `rowKeyGetter(index)` is called for each row and the
+     * returned value overrides `key` for the particular row.
+     */
+    rowKeyGetter: _propTypes2.default.func,
 
     /**
      * Pixel height of the column group header.
      */
-    groupHeaderHeight: PropTypes.number,
+    groupHeaderHeight: _propTypes2.default.number,
 
     /**
      * Pixel height of header.
      */
-    headerHeight: PropTypes.number.isRequired,
+    headerHeight: _propTypes2.default.number.isRequired,
 
     /**
      * Pixel height of footer.
      */
-    footerHeight: PropTypes.number,
+    footerHeight: _propTypes2.default.number,
 
     /**
      * Value of horizontal scroll.
      */
-    scrollLeft: PropTypes.number,
+    scrollLeft: _propTypes2.default.number,
 
     /**
      * Index of column to scroll to.
      */
-    scrollToColumn: PropTypes.number,
+    scrollToColumn: _propTypes2.default.number,
 
     /**
      * Value of vertical scroll.
      */
-    scrollTop: PropTypes.number,
+    scrollTop: _propTypes2.default.number,
 
     /**
      * Index of row to scroll to.
      */
-    scrollToRow: PropTypes.number,
+    scrollToRow: _propTypes2.default.number,
 
     /**
      * Callback that is called when scrolling starts with current horizontal
      * and vertical scroll values.
      */
-    onScrollStart: PropTypes.func,
+    onScrollStart: _propTypes2.default.func,
 
     /**
      * Callback that is called when scrolling ends or stops with new horizontal
      * and vertical scroll values.
      */
-    onScrollEnd: PropTypes.func,
+    onScrollEnd: _propTypes2.default.func,
+
+    /**
+     * If enabled scroll events will not be propagated outside of the table.
+     */
+    stopScrollPropagation: _propTypes2.default.bool,
 
     /**
      * Callback that is called when `rowHeightGetter` returns a different height
      * for a row than the `rowHeight` prop. This is necessary because initially
      * table estimates heights of some parts of the content.
      */
-    onContentHeightChange: PropTypes.func,
+    onContentHeightChange: _propTypes2.default.func,
 
     /**
      * Callback that is called when a row is clicked.
      */
-    onRowClick: PropTypes.func,
+    onRowClick: _propTypes2.default.func,
 
     /**
      * Callback that is called when a row is double clicked.
      */
-    onRowDoubleClick: PropTypes.func,
+    onRowDoubleClick: _propTypes2.default.func,
 
     /**
      * Callback that is called when a mouse-down event happens on a row.
      */
-    onRowMouseDown: PropTypes.func,
+    onRowMouseDown: _propTypes2.default.func,
 
     /**
      * Callback that is called when a mouse-enter event happens on a row.
      */
-    onRowMouseEnter: PropTypes.func,
+    onRowMouseEnter: _propTypes2.default.func,
 
     /**
      * Callback that is called when a mouse-leave event happens on a row.
      */
-    onRowMouseLeave: PropTypes.func,
+    onRowMouseLeave: _propTypes2.default.func,
 
     /**
      * Callback that is called when resizer has been released
@@ -334,7 +391,7 @@ var FixedDataTable = _React2.default.createClass({
      * )
      * ```
      */
-    onColumnResizeEndCallback: PropTypes.func,
+    onColumnResizeEndCallback: _propTypes2.default.func,
 
     /**
      * Callback that is called when reordering has been completed
@@ -350,17 +407,23 @@ var FixedDataTable = _React2.default.createClass({
      * )
      * ```
      */
-    onColumnReorderEndCallback: PropTypes.func,
+    onColumnReorderEndCallback: _propTypes2.default.func,
 
     /**
      * Whether a column is currently being resized.
      */
-    isColumnResizing: PropTypes.bool,
+    isColumnResizing: _propTypes2.default.bool,
 
     /**
      * Whether columns are currently being reordered.
      */
-    isColumnReordering: PropTypes.bool
+    isColumnReordering: _propTypes2.default.bool,
+
+    /**
+     * The number of rows outside the viewport to prerender. Defaults to roughly
+     * half of the number of visible rows.
+     */
+    bufferRowCount: _propTypes2.default.number
   },
 
   getDefaultProps: function getDefaultProps() /*object*/{
@@ -370,23 +433,32 @@ var FixedDataTable = _React2.default.createClass({
       headerHeight: 0,
       showScrollbarX: true,
       showScrollbarY: true,
-      touchScrollEnabled: false
+      touchScrollEnabled: false,
+      stopScrollPropagation: false
     };
   },
   componentWillMount: function componentWillMount() {
     var props = this.props;
 
     var viewportHeight = (props.height === undefined ? props.maxHeight : props.height) - (props.headerHeight || 0) - (props.footerHeight || 0) - (props.groupHeaderHeight || 0);
-    this._scrollHelper = new _FixedDataTableScrollHelper2.default(props.rowsCount, props.rowHeight, viewportHeight, props.rowHeightGetter);
+    this._scrollHelper = new _FixedDataTableScrollHelper2.default(props.rowsCount, props.rowHeight, viewportHeight, props.rowHeightGetter, props.subRowHeight, props.subRowHeightGetter);
 
     this._didScrollStop = (0, _debounceCore2.default)(this._didScrollStop, 200, this);
 
-    var touchEnabled = props.touchScrollEnabled === true;
-
-    this._wheelHandler = new _ReactWheelHandler2.default(this._onScroll, this._shouldHandleWheelX, this._shouldHandleWheelY);
-    this._touchHandler = new _ReactTouchHandler2.default(this._onScroll, touchEnabled && this._shouldHandleWheelX, touchEnabled && this._shouldHandleWheelY);
+    this._wheelHandler = new _ReactWheelHandler2.default(this._onScroll, this._shouldHandleWheelX, this._shouldHandleWheelY, props.stopScrollPropagation);
+    this._touchHandler = new _ReactTouchHandler2.default(this._onScroll, this._shouldHandleTouchX, this._shouldHandleTouchY, props.stopScrollPropagation);
 
     this.setState(this._calculateState(props));
+  },
+  componentWillUnmount: function componentWillUnmount() {
+    this._wheelHandler = null;
+    this._touchHandler = null;
+  },
+  _shouldHandleTouchX: function _shouldHandleTouchX( /*number*/delta) /*boolean*/{
+    return this.props.touchScrollEnabled && this._shouldHandleWheelX(delta);
+  },
+  _shouldHandleTouchY: function _shouldHandleTouchY( /*number*/delta) /*boolean*/{
+    return this.props.touchScrollEnabled && this._shouldHandleWheelY(delta);
   },
   _shouldHandleWheelX: function _shouldHandleWheelX( /*number*/delta) /*boolean*/{
     if (this.props.overflowX === 'hidden') {
@@ -436,16 +508,6 @@ var FixedDataTable = _React2.default.createClass({
   componentWillReceiveProps: function componentWillReceiveProps( /*object*/nextProps) {
     var newOverflowX = nextProps.overflowX;
     var newOverflowY = nextProps.overflowY;
-    var touchEnabled = nextProps.touchScrollEnabled === true;
-
-    if (newOverflowX !== this.props.overflowX || newOverflowY !== this.props.overflowY) {
-      this._wheelHandler = new _ReactWheelHandler2.default(this._onScroll, newOverflowX !== 'hidden', // Should handle horizontal scroll
-      newOverflowY !== 'hidden' // Should handle vertical scroll
-      );
-      this._touchHandler = new _ReactTouchHandler2.default(this._onScroll, newOverflowX !== 'hidden' && touchEnabled, // Should handle horizontal scroll
-      newOverflowY !== 'hidden' && touchEnabled // Should handle vertical scroll
-      );
-    }
 
     // In the case of controlled scrolling, notify.
     if (this.props.ownerHeight !== nextProps.ownerHeight || this.props.scrollTop !== nextProps.scrollTop || this.props.scrollLeft !== nextProps.scrollLeft) {
@@ -643,11 +705,16 @@ var FixedDataTable = _React2.default.createClass({
       rowsCount: state.rowsCount,
       rowGetter: state.rowGetter,
       rowHeightGetter: state.rowHeightGetter,
+      subRowHeight: state.subRowHeight,
+      subRowHeightGetter: state.subRowHeightGetter,
+      rowExpanded: state.rowExpanded,
+      rowKeyGetter: state.rowKeyGetter,
       scrollLeft: state.scrollX,
       scrollableColumns: state.bodyScrollableColumns,
       showLastRowBorder: true,
       width: state.width,
-      rowPositionGetter: this._scrollHelper.getRowPosition
+      rowPositionGetter: this._scrollHelper.getRowPosition,
+      bufferRowCount: this.state.bufferRowCount
     });
   },
 
@@ -686,7 +753,8 @@ var FixedDataTable = _React2.default.createClass({
   /*number*/width,
   /*number*/left,
   /*object*/event) {
-    var isFixed = !!this.state.headFixedColumns.find(function (column) {
+    // No native support in IE11 for find, findIndex, or includes, so using some.
+    var isFixed = this.state.headFixedColumns.some(function (column) {
       return column.props.columnKey === columnKey;
     });
 
@@ -706,7 +774,8 @@ var FixedDataTable = _React2.default.createClass({
   },
   _onColumnReorderMove: function _onColumnReorderMove(
   /*number*/deltaX) {
-    var reorderingData = this.state.columnReorderingData;
+    //NOTE Need to clone this object when use pureRendering
+    var reorderingData = _extends({}, this.state.columnReorderingData);
     reorderingData.dragDistance = deltaX;
     reorderingData.columnBefore = undefined;
     reorderingData.columnAfter = undefined;
@@ -745,11 +814,17 @@ var FixedDataTable = _React2.default.createClass({
     var columnBefore = this.state.columnReorderingData.columnBefore;
     var columnAfter = this.state.columnReorderingData.columnAfter;
     var reorderColumn = this.state.columnReorderingData.columnKey;
+    var cancelReorder = this.state.columnReorderingData.cancelReorder;
 
     this.setState({
       isColumnReordering: false,
       columnReorderingData: {}
     });
+
+    if (cancelReorder) {
+      return;
+    }
+
     this.props.onColumnReorderEndCallback({
       columnBefore: columnBefore, columnAfter: columnAfter, reorderColumn: reorderColumn
     });
@@ -846,21 +921,29 @@ var FixedDataTable = _React2.default.createClass({
 
     var groupHeaderHeight = useGroupHeader ? props.groupHeaderHeight : 0;
 
-    if (oldState && (props.rowsCount !== oldState.rowsCount || props.rowHeight !== oldState.rowHeight)) {
+    if (oldState && (props.rowsCount !== oldState.rowsCount || props.rowHeight !== oldState.rowHeight || props.height !== oldState.height)) {
       // Number of rows changed, try to scroll to the row from before the
       // change
       var viewportHeight = (props.height === undefined ? props.maxHeight : props.height) - (props.headerHeight || 0) - (props.footerHeight || 0) - (props.groupHeaderHeight || 0);
-      this._scrollHelper = new _FixedDataTableScrollHelper2.default(props.rowsCount, props.rowHeight, viewportHeight, props.rowHeightGetter);
+
+      var oldViewportHeight = this._scrollHelper._viewportHeight;
+
+      this._scrollHelper = new _FixedDataTableScrollHelper2.default(props.rowsCount, props.rowHeight, viewportHeight, props.rowHeightGetter, props.subRowHeight, props.subRowHeightGetter);
       scrollState = this._scrollHelper.scrollToRow(firstRowIndex, firstRowOffset);
       firstRowIndex = scrollState.index;
       firstRowOffset = scrollState.offset;
       scrollY = scrollState.position;
-    } else if (oldState && props.rowHeightGetter !== oldState.rowHeightGetter) {
-      this._scrollHelper.setRowHeightGetter(props.rowHeightGetter);
+    } else if (oldState) {
+      if (props.rowHeightGetter !== oldState.rowHeightGetter) {
+        this._scrollHelper.setRowHeightGetter(props.rowHeightGetter);
+      }
+      if (props.subRowHeightGetter !== oldState.subRowHeightGetter) {
+        this._scrollHelper.setSubRowHeightGetter(props.subRowHeightGetter);
+      }
     }
 
     var lastScrollToRow = oldState ? oldState.scrollToRow : undefined;
-    if (props.scrollToRow != null && props.scrollToRow !== lastScrollToRow) {
+    if (props.scrollToRow != null && (props.scrollToRow !== lastScrollToRow || viewportHeight !== oldViewportHeight)) {
       scrollState = this._scrollHelper.scrollRowIntoView(props.scrollToRow);
       firstRowIndex = scrollState.index;
       firstRowOffset = scrollState.offset;
@@ -961,6 +1044,18 @@ var FixedDataTable = _React2.default.createClass({
 
     this._scrollHelper.setViewportHeight(bodyHeight);
 
+    // This calculation is synonymous to Element.scrollTop
+    var scrollTop = Math.abs(firstRowOffset - this._scrollHelper.getRowPosition(firstRowIndex));
+    // This case can happen when the user is completely scrolled down and resizes the viewport to be taller vertically.
+    // This is because we set the viewport height after having calculated the rows
+    if (scrollTop !== scrollY) {
+      scrollTop = maxScrollY;
+      scrollState = this._scrollHelper.scrollTo(scrollTop);
+      firstRowIndex = scrollState.index;
+      firstRowOffset = scrollState.offset;
+      scrollY = scrollState.position;
+    }
+
     // The order of elements in this object metters and bringing bodyHeight,
     // height or useGroupHeader to the top can break various features
     var newState = _extends({
@@ -979,7 +1074,6 @@ var FixedDataTable = _React2.default.createClass({
       scrollContentHeight: scrollContentHeight,
       scrollX: scrollX,
       scrollY: scrollY,
-
       // These properties may overwrite properties defined in
       // columnInfo and props
       bodyHeight: bodyHeight,
@@ -1016,13 +1110,14 @@ var FixedDataTable = _React2.default.createClass({
     };
   },
   _onScroll: function _onScroll( /*number*/deltaX, /*number*/deltaY) {
-    if (this.isMounted() && !this.props.scrollLock) {
-      if (!this._isScrolling) {
-        this._didScrollStart();
-      }
-      var x = this.state.scrollX;
-      if (Math.abs(deltaY) > Math.abs(deltaX) && this.props.overflowY !== 'hidden') {
-        var scrollState = this._scrollHelper.scrollBy(Math.round(deltaY));
+    if (!this._isScrolling && !this.props.scrollLock) {
+      this._didScrollStart();
+    }
+    var x = this.state.scrollX;
+    if (Math.abs(deltaY) > Math.abs(deltaX) && this.props.overflowY !== 'hidden') {
+      var scrollState = this._scrollHelper.scrollBy(Math.round(deltaY));
+      var onVerticalScroll = this.props.onVerticalScroll;
+      if (onVerticalScroll ? onVerticalScroll(scrollState.position) : true) {
         var maxScrollY = Math.max(0, scrollState.contentHeight - this.state.bodyHeight);
         this.setState({
           firstRowIndex: scrollState.index,
@@ -1031,43 +1126,51 @@ var FixedDataTable = _React2.default.createClass({
           scrollContentHeight: scrollState.contentHeight,
           maxScrollY: maxScrollY
         });
-      } else if (deltaX && this.props.overflowX !== 'hidden') {
-        x += deltaX;
-        x = x < 0 ? 0 : x;
-        x = x > this.state.maxScrollX ? this.state.maxScrollX : x;
-
-        //NOTE (asif) This is a hacky workaround to prevent FDT from setting its internal state
-        var onHorizontalScroll = this.props.onHorizontalScroll;
-        if (onHorizontalScroll ? onHorizontalScroll(x) : true) {
-          this.setState({
-            scrollX: x
-          });
-        }
       }
+    } else if (deltaX && this.props.overflowX !== 'hidden') {
+      x += deltaX;
+      x = x < 0 ? 0 : x;
+      x = x > this.state.maxScrollX ? this.state.maxScrollX : x;
 
-      this._didScrollStop();
-    }
-  },
-  _onHorizontalScroll: function _onHorizontalScroll( /*number*/scrollPos) {
-    if (this.isMounted() && scrollPos !== this.state.scrollX) {
-      if (!this._isScrolling) {
-        this._didScrollStart();
-      }
+      //NOTE (asif) This is a hacky workaround to prevent FDT from setting its internal state
       var onHorizontalScroll = this.props.onHorizontalScroll;
-      if (onHorizontalScroll ? onHorizontalScroll(scrollPos) : true) {
+      if (onHorizontalScroll ? onHorizontalScroll(x) : true) {
         this.setState({
-          scrollX: scrollPos
+          scrollX: x
         });
       }
-      this._didScrollStop();
     }
+
+    this._didScrollStop();
+  },
+  _onHorizontalScroll: function _onHorizontalScroll( /*number*/scrollPos) {
+    if (scrollPos === this.state.scrollX) {
+      return;
+    }
+
+    if (!this._isScrolling) {
+      this._didScrollStart();
+    }
+    var onHorizontalScroll = this.props.onHorizontalScroll;
+    if (onHorizontalScroll ? onHorizontalScroll(scrollPos) : true) {
+      this.setState({
+        scrollX: scrollPos
+      });
+    }
+    this._didScrollStop();
   },
   _onVerticalScroll: function _onVerticalScroll( /*number*/scrollPos) {
-    if (this.isMounted() && scrollPos !== this.state.scrollY) {
-      if (!this._isScrolling) {
-        this._didScrollStart();
-      }
-      var scrollState = this._scrollHelper.scrollTo(Math.round(scrollPos));
+    if (scrollPos === this.state.scrollY) {
+      return;
+    }
+
+    if (!this._isScrolling) {
+      this._didScrollStart();
+    }
+    var scrollState = this._scrollHelper.scrollTo(Math.round(scrollPos));
+
+    var onVerticalScroll = this.props.onVerticalScroll;
+    if (onVerticalScroll ? onVerticalScroll(scrollState.position) : true) {
       this.setState({
         firstRowIndex: scrollState.index,
         firstRowOffset: scrollState.offset,
@@ -1078,34 +1181,38 @@ var FixedDataTable = _React2.default.createClass({
     }
   },
   _didScrollStart: function _didScrollStart() {
-    if (this.isMounted() && !this._isScrolling) {
-      this._isScrolling = true;
-      if (this.props.onScrollStart) {
-        this.props.onScrollStart(this.state.scrollX, this.state.scrollY, this.state.firstRowIndex);
-      }
+    if (this._isScrolling) {
+      return;
+    }
+
+    this._isScrolling = true;
+    if (this.props.onScrollStart) {
+      this.props.onScrollStart(this.state.scrollX, this.state.scrollY, this.state.firstRowIndex);
     }
   },
   _didScrollStop: function _didScrollStop() {
-    if (this.isMounted() && this._isScrolling) {
-      this._isScrolling = false;
-      this.setState({ redraw: true });
-      if (this.props.onScrollEnd) {
-        this.props.onScrollEnd(this.state.scrollX, this.state.scrollY, this.state.firstRowIndex);
-      }
+    if (!this._isScrolling) {
+      return;
+    }
+
+    this._isScrolling = false;
+    this.setState({ redraw: true });
+    if (this.props.onScrollEnd) {
+      this.props.onScrollEnd(this.state.scrollX, this.state.scrollY, this.state.firstRowIndex);
     }
   }
 });
 
-var HorizontalScrollbar = _React2.default.createClass({
+var HorizontalScrollbar = (0, _createReactClass2.default)({
   displayName: 'HorizontalScrollbar',
-
   mixins: [_ReactComponentWithPureRenderMixin2.default],
+
   propTypes: {
-    contentSize: PropTypes.number.isRequired,
-    offset: PropTypes.number.isRequired,
-    onScroll: PropTypes.func.isRequired,
-    position: PropTypes.number.isRequired,
-    size: PropTypes.number.isRequired
+    contentSize: _propTypes2.default.number.isRequired,
+    offset: _propTypes2.default.number.isRequired,
+    onScroll: _propTypes2.default.func.isRequired,
+    position: _propTypes2.default.number.isRequired,
+    size: _propTypes2.default.number.isRequired
   },
 
   componentWillMount: function componentWillMount() {

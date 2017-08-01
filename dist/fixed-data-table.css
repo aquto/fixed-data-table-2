@@ -221,6 +221,12 @@ body[dir="rtl"] .fixedDataTableColumnResizerLineLayout_main {
   top: 0;
 }
 
+.fixedDataTableRowLayout_rowExpanded {
+  box-sizing: border-box;
+  left: 0;
+  position: absolute;
+}
+
 .fixedDataTableRowLayout_fixedColumnsDivider {
   -webkit-backface-visibility: hidden;
           backface-visibility: hidden;

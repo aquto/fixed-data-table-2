@@ -18,6 +18,14 @@ var _React = require('./React');
 
 var _React2 = _interopRequireDefault(_React);
 
+var _createReactClass = require('create-react-class');
+
+var _createReactClass2 = _interopRequireDefault(_createReactClass);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _cx = require('./cx');
 
 var _cx2 = _interopRequireDefault(_cx);
@@ -25,6 +33,10 @@ var _cx2 = _interopRequireDefault(_cx);
 var _joinClasses = require('./joinClasses');
 
 var _joinClasses2 = _interopRequireDefault(_joinClasses);
+
+var _shallowEqual = require('./shallowEqual');
+
+var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -42,17 +54,13 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
 
 var DIR_SIGN = _FixedDataTableHelper2.default.DIR_SIGN;
 
-var PropTypes = _React2.default.PropTypes;
-
-
 var DEFAULT_PROPS = {
   align: 'left',
   highlighted: false
 };
 
-var FixedDataTableCell = _React2.default.createClass({
+var FixedDataTableCell = (0, _createReactClass2.default)({
   displayName: 'FixedDataTableCell',
-
 
   /**
    * PropTypes are disabled in this component, because having them on slows
@@ -60,23 +68,23 @@ var FixedDataTableCell = _React2.default.createClass({
    * development, but please don't commit this component with enabled propTypes.
    */
   propTypes_DISABLED_FOR_PERFORMANCE: {
-    isScrolling: PropTypes.bool,
-    align: PropTypes.oneOf(['left', 'center', 'right']),
-    className: PropTypes.string,
-    highlighted: PropTypes.bool,
-    width: PropTypes.number.isRequired,
-    minWidth: PropTypes.number,
-    maxWidth: PropTypes.number,
-    height: PropTypes.number.isRequired,
+    isScrolling: _propTypes2.default.bool,
+    align: _propTypes2.default.oneOf(['left', 'center', 'right']),
+    className: _propTypes2.default.string,
+    highlighted: _propTypes2.default.bool,
+    width: _propTypes2.default.number.isRequired,
+    minWidth: _propTypes2.default.number,
+    maxWidth: _propTypes2.default.number,
+    height: _propTypes2.default.number.isRequired,
 
-    cell: PropTypes.oneOfType([PropTypes.string, PropTypes.element, PropTypes.func]),
+    cell: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.element, _propTypes2.default.func]),
 
-    columnKey: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    columnKey: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number]),
 
     /**
      * The row index that will be passed to `cellRenderer` to render.
      */
-    rowIndex: PropTypes.number.isRequired,
+    rowIndex: _propTypes2.default.number.isRequired,
 
     /**
      * Callback for when resizer knob (in FixedDataTableCell) is clicked
@@ -90,13 +98,18 @@ var FixedDataTableCell = _React2.default.createClass({
      * @param number|string columnKey
      * @param object event
      */
-    onColumnResize: PropTypes.func,
-    onColumnReorder: PropTypes.func,
+    onColumnResize: _propTypes2.default.func,
+    onColumnReorder: _propTypes2.default.func,
 
     /**
      * The left offset in pixels of the cell.
      */
-    left: PropTypes.number
+    left: _propTypes2.default.number,
+
+    /**
+     * Flag for enhanced performance check
+     */
+    pureRendering: _propTypes2.default.bool
   },
 
   getInitialState: function getInitialState() {
@@ -107,7 +120,37 @@ var FixedDataTableCell = _React2.default.createClass({
     };
   },
   shouldComponentUpdate: function shouldComponentUpdate(nextProps) {
-    return !nextProps.isScrolling || this.props.rowIndex !== nextProps.rowIndex;
+    if (nextProps.isScrolling && this.props.rowIndex === nextProps.rowIndex) {
+      return false;
+    }
+
+    //Performance check not enabled
+    if (!nextProps.pureRendering) {
+      return true;
+    }
+
+    var _props = this.props,
+        oldCell = _props.cell,
+        oldIsScrolling = _props.isScrolling,
+        oldProps = _objectWithoutProperties(_props, ['cell', 'isScrolling']);
+
+    var newCell = nextProps.cell,
+        newIsScrolling = nextProps.isScrolling,
+        newProps = _objectWithoutProperties(nextProps, ['cell', 'isScrolling']);
+
+    if (!(0, _shallowEqual2.default)(oldProps, newProps)) {
+      return true;
+    }
+
+    if (!oldCell || !newCell || oldCell.type !== newCell.type) {
+      return true;
+    }
+
+    if (!(0, _shallowEqual2.default)(oldCell.props, newCell.props)) {
+      return true;
+    }
+
+    return false;
   },
   componentWillReceiveProps: function componentWillReceiveProps(props) {
     var left = props.left + this.state.displacement;
@@ -182,11 +225,11 @@ var FixedDataTableCell = _React2.default.createClass({
     return DEFAULT_PROPS;
   },
   render: function render() /*object*/{
-    var _props = this.props,
-        height = _props.height,
-        width = _props.width,
-        columnKey = _props.columnKey,
-        props = _objectWithoutProperties(_props, ['height', 'width', 'columnKey']);
+    var _props2 = this.props,
+        height = _props2.height,
+        width = _props2.width,
+        columnKey = _props2.columnKey,
+        props = _objectWithoutProperties(_props2, ['height', 'width', 'columnKey']);
 
     var style = {
       height: height,

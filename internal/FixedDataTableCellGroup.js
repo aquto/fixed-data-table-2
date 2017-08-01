@@ -22,6 +22,14 @@ var _React = require('./React');
 
 var _React2 = _interopRequireDefault(_React);
 
+var _createReactClass = require('create-react-class');
+
+var _createReactClass2 = _interopRequireDefault(_createReactClass);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _FixedDataTableCell = require('./FixedDataTableCell');
 
 var _FixedDataTableCell2 = _interopRequireDefault(_FixedDataTableCell);
@@ -38,14 +46,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var PropTypes = _React2.default.PropTypes;
-
-
 var DIR_SIGN = _FixedDataTableHelper2.default.DIR_SIGN;
 
-var FixedDataTableCellGroupImpl = _React2.default.createClass({
+var FixedDataTableCellGroupImpl = (0, _createReactClass2.default)({
   displayName: 'FixedDataTableCellGroupImpl',
-
 
   /**
    * PropTypes are disabled in this component, because having them on slows
@@ -57,25 +61,25 @@ var FixedDataTableCellGroupImpl = _React2.default.createClass({
     /**
      * Array of <FixedDataTableColumn />.
      */
-    columns: PropTypes.array.isRequired,
+    columns: _propTypes2.default.array.isRequired,
 
-    isScrolling: PropTypes.bool,
+    isScrolling: _propTypes2.default.bool,
 
-    left: PropTypes.number,
+    left: _propTypes2.default.number,
 
-    onColumnResize: PropTypes.func,
+    onColumnResize: _propTypes2.default.func,
 
-    onColumnReorder: PropTypes.func,
-    onColumnReorderMove: PropTypes.func,
-    onColumnReorderEnd: PropTypes.func,
+    onColumnReorder: _propTypes2.default.func,
+    onColumnReorderMove: _propTypes2.default.func,
+    onColumnReorderEnd: _propTypes2.default.func,
 
-    rowHeight: PropTypes.number.isRequired,
+    rowHeight: _propTypes2.default.number.isRequired,
 
-    rowIndex: PropTypes.number.isRequired,
+    rowIndex: _propTypes2.default.number.isRequired,
 
-    width: PropTypes.number.isRequired,
+    width: _propTypes2.default.number.isRequired,
 
-    zIndex: PropTypes.number.isRequired
+    zIndex: _propTypes2.default.number.isRequired
   },
 
   componentWillMount: function componentWillMount() {
@@ -137,6 +141,8 @@ var FixedDataTableCellGroupImpl = _React2.default.createClass({
     var onColumnReorder = cellIsReorderable ? this.props.onColumnReorder : null;
 
     var className = columnProps.cellClassName;
+    var pureRendering = columnProps.pureRendering || false;
+
     return _React2.default.createElement(_FixedDataTableCell2.default, {
       isScrolling: this.props.isScrolling,
       align: columnProps.align,
@@ -156,7 +162,8 @@ var FixedDataTableCellGroupImpl = _React2.default.createClass({
       width: columnProps.width,
       left: left,
       cell: columnProps.cell,
-      columnGroupWidth: columnGroupWidth
+      columnGroupWidth: columnGroupWidth,
+      pureRendering: pureRendering
     });
   },
   _getColumnsWidth: function _getColumnsWidth( /*array*/columns) /*number*/{
@@ -168,9 +175,8 @@ var FixedDataTableCellGroupImpl = _React2.default.createClass({
   }
 });
 
-var FixedDataTableCellGroup = _React2.default.createClass({
+var FixedDataTableCellGroup = (0, _createReactClass2.default)({
   displayName: 'FixedDataTableCellGroup',
-
 
   /**
    * PropTypes are disabled in this component, because having them on slows
@@ -178,20 +184,20 @@ var FixedDataTableCellGroup = _React2.default.createClass({
    * development, but please don't commit this component with enabled propTypes.
    */
   propTypes_DISABLED_FOR_PERFORMANCE: {
-    isScrolling: PropTypes.bool,
+    isScrolling: _propTypes2.default.bool,
     /**
      * Height of the row.
      */
-    height: PropTypes.number.isRequired,
+    height: _propTypes2.default.number.isRequired,
 
-    offsetLeft: PropTypes.number,
+    offsetLeft: _propTypes2.default.number,
 
-    left: PropTypes.number,
+    left: _propTypes2.default.number,
     /**
      * Z-index on which the row will be displayed. Used e.g. for keeping
      * header and footer in front of other rows.
      */
-    zIndex: PropTypes.number.isRequired
+    zIndex: _propTypes2.default.number.isRequired
   },
 
   shouldComponentUpdate: function shouldComponentUpdate( /*object*/nextProps) /*boolean*/{
@@ -208,7 +214,8 @@ var FixedDataTableCellGroup = _React2.default.createClass({
         props = _objectWithoutProperties(_props, ['offsetLeft']);
 
     var style = {
-      height: props.height
+      height: props.height,
+      width: props.width
     };
 
     if (DIR_SIGN === 1) {

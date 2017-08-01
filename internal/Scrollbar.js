@@ -12,6 +12,14 @@ var _React = require('./React');
 
 var _React2 = _interopRequireDefault(_React);
 
+var _createReactClass = require('create-react-class');
+
+var _createReactClass2 = _interopRequireDefault(_createReactClass);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _ReactDOM = require('./ReactDOM');
 
 var _ReactDOM2 = _interopRequireDefault(_ReactDOM);
@@ -54,9 +62,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @typechecks
  */
 
-var PropTypes = _React2.default.PropTypes;
-
-
 var UNSCROLLABLE_STATE = {
   position: 0,
   scrollable: false
@@ -69,22 +74,21 @@ var KEYBOARD_SCROLL_AMOUNT = 40;
 
 var _lastScrolledScrollbar = null;
 
-var Scrollbar = _React2.default.createClass({
+var Scrollbar = (0, _createReactClass2.default)({
   displayName: 'Scrollbar',
-
   mixins: [_ReactComponentWithPureRenderMixin2.default],
 
   propTypes: {
-    contentSize: PropTypes.number.isRequired,
-    defaultPosition: PropTypes.number,
-    isOpaque: PropTypes.bool,
-    orientation: PropTypes.oneOf(['vertical', 'horizontal']),
-    onScroll: PropTypes.func,
-    position: PropTypes.number,
-    size: PropTypes.number.isRequired,
-    trackColor: PropTypes.oneOf(['gray']),
-    zIndex: PropTypes.number,
-    verticalTop: PropTypes.number
+    contentSize: _propTypes2.default.number.isRequired,
+    defaultPosition: _propTypes2.default.number,
+    isOpaque: _propTypes2.default.bool,
+    orientation: _propTypes2.default.oneOf(['vertical', 'horizontal']),
+    onScroll: _propTypes2.default.func,
+    position: _propTypes2.default.number,
+    size: _propTypes2.default.number.isRequired,
+    trackColor: _propTypes2.default.oneOf(['gray']),
+    zIndex: _propTypes2.default.number,
+    verticalTop: _propTypes2.default.number
   },
 
   getInitialState: function getInitialState() /*object*/{
@@ -414,13 +418,16 @@ var Scrollbar = _React2.default.createClass({
     });
   },
   _blur: function _blur() {
-    if (this.isMounted()) {
-      try {
-        this._onBlur();
-        _ReactDOM2.default.findDOMNode(this).blur();
-      } catch (oops) {
-        // pass
-      }
+    var el = _ReactDOM2.default.findDOMNode(this);
+    if (!el) {
+      return;
+    }
+
+    try {
+      this._onBlur();
+      el.blur();
+    } catch (oops) {
+      // pass
     }
   },
   _setNextState: function _setNextState( /*object*/nextState, /*?object*/props) {
