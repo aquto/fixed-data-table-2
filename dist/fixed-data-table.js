@@ -1327,38 +1327,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	  },
 	  _onScroll: function _onScroll( /*number*/deltaX, /*number*/deltaY) {
-	    if (!this._isScrolling && !this.props.scrollLock) {
-	      this._didScrollStart();
-	    }
-	    var x = this.state.scrollX;
-	    if (Math.abs(deltaY) > Math.abs(deltaX) && this.props.overflowY !== 'hidden') {
-	      var scrollState = this._scrollHelper.scrollBy(Math.round(deltaY));
-	      var onVerticalScroll = this.props.onVerticalScroll;
-	      if (onVerticalScroll ? onVerticalScroll(scrollState.position) : true) {
-	        var maxScrollY = Math.max(0, scrollState.contentHeight - this.state.bodyHeight);
-	        this.setState({
-	          firstRowIndex: scrollState.index,
-	          firstRowOffset: scrollState.offset,
-	          scrollY: scrollState.position,
-	          scrollContentHeight: scrollState.contentHeight,
-	          maxScrollY: maxScrollY
-	        });
+	    if (!this.props.scrollLock) {
+	      if (!this._isScrolling) {
+	        this._didScrollStart();
 	      }
-	    } else if (deltaX && this.props.overflowX !== 'hidden') {
-	      x += deltaX;
-	      x = x < 0 ? 0 : x;
-	      x = x > this.state.maxScrollX ? this.state.maxScrollX : x;
+	      var x = this.state.scrollX;
+	      if (Math.abs(deltaY) > Math.abs(deltaX) && this.props.overflowY !== 'hidden') {
+	        var scrollState = this._scrollHelper.scrollBy(Math.round(deltaY));
+	        var onVerticalScroll = this.props.onVerticalScroll;
+	        if (onVerticalScroll ? onVerticalScroll(scrollState.position) : true) {
+	          var maxScrollY = Math.max(0, scrollState.contentHeight - this.state.bodyHeight);
+	          this.setState({
+	            firstRowIndex: scrollState.index,
+	            firstRowOffset: scrollState.offset,
+	            scrollY: scrollState.position,
+	            scrollContentHeight: scrollState.contentHeight,
+	            maxScrollY: maxScrollY
+	          });
+	        }
+	      } else if (deltaX && this.props.overflowX !== 'hidden') {
+	        x += deltaX;
+	        x = x < 0 ? 0 : x;
+	        x = x > this.state.maxScrollX ? this.state.maxScrollX : x;
 
-	      //NOTE (asif) This is a hacky workaround to prevent FDT from setting its internal state
-	      var onHorizontalScroll = this.props.onHorizontalScroll;
-	      if (onHorizontalScroll ? onHorizontalScroll(x) : true) {
-	        this.setState({
-	          scrollX: x
-	        });
+	        //NOTE (asif) This is a hacky workaround to prevent FDT from setting its internal state
+	        var onHorizontalScroll = this.props.onHorizontalScroll;
+	        if (onHorizontalScroll ? onHorizontalScroll(x) : true) {
+	          this.setState({
+	            scrollX: x
+	          });
+	        }
 	      }
+	      this._didScrollStop();
 	    }
-
-	    this._didScrollStop();
 	  },
 	  _onHorizontalScroll: function _onHorizontalScroll( /*number*/scrollPos) {
 	    if (scrollPos === this.state.scrollX) {
